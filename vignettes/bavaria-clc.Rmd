@@ -1,0 +1,139 @@
+---
+title: "Corine land cover analysis of Bavaria"
+author: "RS-eco"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Corine land cover analysis of Bavaria}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  results="asis", cache=TRUE,
+  echo=F, warning=F, message=F,
+  fig.width=10, fig.height=8
+)
+```
+
+```{r load_pkgs}
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(patchwork)
+library(zoo)
+
+# Define standard colour scheme
+bluewhitered <- colorRampPalette(c("#009392","#39b185","#9ccb86","#e9e29c","#eeb479","#e88471","#cf597e"))(255)
+#pie(rep(1,7),col=c("#009392","#39b185","#9ccb86","#e9e29c","#eeb479","#e88471","#cf597e"))
+```
+
+```{r}
+# Load shapefile of Bavaria
+data("bavaria", package="bdc")
+bavaria <- sf::st_as_sf(bavaria)
+```
+
+# General information
+
+<!--An analysis of the Euro-Codex data for Europe can be found here: https://www.dkrz.de/projekte-und-partner/HLRE-Projekte/focus/regionale-klimaprojektionen-fuer-europa
+-->
+
+# Data Analysis
+
+Here, I perform a first analysis of the Corine Land-Cover and Land-Cover Change Data for Bavaria.
+
+The Corine CLC data for Bavaria (corine_clc_bav_tk25.rda) and CHA data (croine_cha_bav_tk25.rda), which I use here, can be downloaded from https://github.com/RS-eco/bdc/blob/master/data/.
+
+The code for how the CLC and CHA data (corine_clc_bav_tk25.rda and corine_cha_bav_tk25.rda) was created can be found here: https://github.com/RS-eco/bdc/blob/master/data-raw/corine_lc.R
+
+```{r}
+data("corine_lc_bav_tk4tel", package="bdc")
+#head(corine_lc_bav_tk4tel)
+colnames(corine_lc_bav_tk4tel) <- c("x", "y", "1990", "2000", "2006", "2012", "2018")
+
+# Plot individual variable from long format
+corine_lc_bav_tk4tel %>% ggplot() + 
+  geom_tile(aes (x=x, y=y, fill=`1990`)) +
+  scale_fill_manual(name="CLC 1990", values=c("#e6004d", "#ff0000", "#ffffa8", "#f2a64d", "#e6e64d",
+                                               "#ffe64d", "#80ff00", "#00a600", "#4dff00", "#ccf24d",
+                                               "#a6ff80", "#cccccc", "#a6a6ff", "#80f2e6")) + 
+  coord_sf() + theme_bw()
+
+corine_lc_bav_tk4tel %>% ggplot() + 
+  geom_tile(aes (x=x, y=y, fill=`2000`)) + coord_sf() + theme_bw() + 
+  scale_fill_manual(name="CLC 2000", values=c("#e6004d", "#ff0000", "#ffffa8", "#f2a64d", "#e6e64d",
+                                               "#ffe64d", "#80ff00", "#00a600", "#4dff00", "#ccf24d",
+                                               "#a6ff80", "#a6f200", "#cccccc", "#a6a6ff", "#80f2e6")) 
+
+corine_lc_bav_tk4tel %>% ggplot() + geom_tile(aes (x=x, y=y, fill=`2006`)) +
+  scale_fill_manual(name="CLC 2006",values=c("#e6004d", "#ff0000", "#ffffa8", "#f2a64d", "#e6e64d",
+                                               "#ffe64d", "#80ff00", "#00a600", "#4dff00", "#ccf24d",
+                                               "#a6ff80", "#a6f200", "#cccccc", "#a6a6ff", "#80f2e6")) + 
+  coord_sf() + theme_bw()
+
+corine_lc_bav_tk4tel %>% ggplot() + geom_tile(aes (x=x, y=y, fill=`2012`)) +
+  scale_fill_manual(name="CLC 2012", values=c("#e6004d", "#ff0000", "#ffffa8", "#f2a64d", "#e6e64d",
+                                               "#80ff00", "#00a600", "#4dff00", "#ccf24d",
+                                               "#a6ff80", "#a6f200", "#cccccc", "#4d4dff", "#80f2e6")) + 
+  coord_sf() + theme_bw()
+
+corine_lc_bav_tk4tel %>% ggplot() + geom_tile(aes (x=x, y=y, fill=`2018`)) +
+  scale_fill_manual(name="CLC 2018", values=c("#e6004d", "#ff0000", "#ffffa8", "#f2a64d", "#e6e64d",
+                                               "#80ff00", "#00a600", "#4dff00", "#ccf24d",
+                                               "#a6ff80", "#a6f200", "#cccccc", "#4d4dff", "#80f2e6")) + 
+  coord_sf() + theme_bw()
+```
+
+### CLC - Colour keys
+
+color="#e6004d" label="111 - Continuous urban fabric"  
+color="#ff0000" label="112 - Discontinuous urban fabric"  
+color="#cc4df2" label="121 - Industrial or commercial units"  
+color="#cc0000" label="122 - Road and rail networks and associated land"  
+color="#e6cccc" label="123 - Port areas"  
+color="#e6cce6" label="124 - Airports"  
+color="#a600cc" label="131 - Mineral extraction sites"  
+color="#a64d00" label="132 - Dump sites"  
+color="#ff4dff" label="133 - Construction sites"  
+color="#ffa6ff" label="141 - Green urban areas"  
+color="#ffe6ff" label="142 - Sport and leisure facilities"  
+color="#ffffa8" label="211 - Non-irrigated arable land"  
+color="#ffff00" label="212 - Permanently irrigated land"  
+color="#e6e600" label="213 - Rice fields"  
+color="#e68000" label="221 - Vineyards"  
+color="#f2a64d" label="222 - Fruit trees and berry plantations"  
+color="#e6a600" label="223 - Olive groves"  
+color="#e6e64d" label="231 - Pastures"  
+color="#ffe6a6" label="241 - Annual crops associated with permanent crops"  
+color="#ffe64d" label="242 - Complex cultivation patterns"  
+color="#e6cc4d" label="243 - Land principally occupied by agriculture with significant areas of natural vegetation"  
+color="#f2cca6" label="244 - Agro-forestry areas"  
+color="#80ff00" label="311 - Broad-leaved forest"  
+color="#00a600" label="312 - Coniferous forest"  
+color="#4dff00" label="313 - Mixed forest"  
+color="#ccf24d" label="321 - Natural grasslands"  
+color="#a6ff80" label="322 - Moors and heathland"  
+color="#a6e64d" label="323 - Sclerophyllous vegetation"  
+color="#a6f200" label="324 - Transitional woodland-shrub"  
+color="#e6e6e6" label="331 - Beaches - dunes - sands"  
+color="#cccccc" label="332 - Bare rocks"  
+color="#ccffcc" label="333 - Sparsely vegetated areas"  
+color="#000000" label="334 - Burnt areas"  
+color="#a6e6cc" label="335 - Glaciers and perpetual snow"  
+color="#a6a6ff" label="411 - Inland marshes"  
+color="#4d4dff" label="412 - Peat bogs"  
+color="#ccccff" label="421 - Salt marshes"  
+color="#e6e6ff" label="422 - Salines"  
+color="#a6a6e6" label="423 - Intertidal flats"  
+color="#00ccf2" label="511 - Water courses"  
+color="#80f2e6" label="512 - Water bodies"  
+color="#00ffa6" label="521 - Coastal lagoons"  
+color="#a6ffe6" label="522 - Estuaries"  
+color="#e6f2ff" label="523 - Sea and ocean"  
+color="#ffffff" label="999 - NODATA"  

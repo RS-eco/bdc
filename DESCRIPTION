@@ -1,0 +1,20 @@
+Package: bdc
+Type: Package
+Title: Bavarian Data Cube
+Version: 0.0.1
+Date: 2021-07-19
+Authors@R: 
+    person("RS-eco", email = "RS-eco@posteo.de", role = c("cre", "aut"))
+Maintainer: RS-eco <rs-eco@posteo.de>
+Description: R package to access various data sources for Bavaria, i.e. elevation, climate and land-use data.
+Depends: R (>= 4.0)
+Imports: raster, ggplot2, sf, dplyr, sp, ggsci, ggspatial, ggthemes, lubridate, patchwork, tidyverse, zoo, scales, tidyr, taxize
+Suggests: knitr, rmarkdown, magrittr, GGally, scico, vroom
+License: file LICENSE
+LazyData: TRUE
+VignetteBuilder: knitr
+RoxygenNote: 7.1.1
+NeedsCompilation: no
+Author: RS-eco [cre, aut]
+URL: https://github.com/RS-eco/bdc
+BugReports: https://github.com/RS-eco/bdc/issues
